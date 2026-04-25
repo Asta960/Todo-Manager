@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog, Tray, Menu, nativeImage } = require("electron");
+const { app, BrowserWindow, ipcMain, dialog } = require("electron");
 const fs = require("node:fs/promises");
 const fsSync = require("node:fs");
 const path = require("node:path");
@@ -13,7 +13,6 @@ const SCHEMA_VERSION = 3;
 
 let mainWindow = null;
 let splashWindow = null;
-let tray = null;
 let isQuitting = false;
 let windowStateSaveTimer = null;
 
@@ -358,20 +357,6 @@ async function saveDataFile(data, targetPath) {
   await fs.writeFile(targetPath, JSON.stringify(data, null, 2), "utf-8");
 }
 
-function createTrayImage() {
-  const iconPath = path.join(__dirname, "image.png");
-  if (fsSync.existsSync(iconPath)) {
-    const image = nativeImage.createFromPath(iconPath);
-    if (!image.isEmpty()) {
-      const traySize = process.platform === "win32" ? 16 : 18;
-      return image.resize({ width: traySize, height: traySize });
-    }
-  }
-  return nativeImage.createFromDataURL(
-    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
-  );
-}
-
 async function createMainWindow() {
   createSplashWindow();
   const config = await loadConfig();
@@ -411,50 +396,14 @@ async function createMainWindow() {
   });
 
   mainWindow.on("close", (event) => {
-    if (!isQuitting) {
-      event.preventDefault();
-      scheduleWindowStateSave();
-      mainWindow.hide();
-    }
+    scheduleWindowStateSave();
+    // No tray: allow the app to close normally.
   });
 
   mainWindow.on("move", scheduleWindowStateSave);
   mainWindow.on("resize", scheduleWindowStateSave);
   mainWindow.on("maximize", scheduleWindowStateSave);
   mainWindow.on("unmaximize", scheduleWindowStateSave);
-}
-
-function createAppTray() {
-  tray = new Tray(createTrayImage());
-  tray.setToolTip("Todo Manager");
-  const menu = Menu.buildFromTemplate([
-    {
-      label: "Открыть",
-      click: () => {
-        mainWindow.show();
-        mainWindow.focus();
-      }
-    },
-    {
-      label: "Выход",
-      click: () => {
-        isQuitting = true;
-        app.quit();
-      }
-    }
-  ]);
-
-  const showTrayMenu = () => {
-    tray.popUpContextMenu(menu);
-  };
-
-  tray.on("click", showTrayMenu);
-  tray.on("right-click", showTrayMenu);
-
-  tray.on("double-click", () => {
-    mainWindow.show();
-    mainWindow.focus();
-  });
 }
 
 function registerIpc() {
@@ -516,7 +465,6 @@ function registerIpc() {
 
   ipcMain.handle("window:close", () => {
     if (!mainWindow) return;
-    // Respect tray behavior unless user explicitly closes from titlebar.
     isQuitting = true;
     mainWindow.close();
   });
@@ -524,7 +472,6 @@ function registerIpc() {
 
 app.whenReady().then(() => {
   createMainWindow();
-  createAppTray();
   registerIpc();
 
   app.on("activate", () => {
