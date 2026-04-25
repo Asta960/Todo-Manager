@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Loading</title>
+    <style>
+      :root {
+        --bg: #0b0b0f;
+        --surface: rgba(255, 255, 255, 0.06);
+        --text: rgba(255, 255, 255, 0.92);
+        --muted: rgba(255, 255, 255, 0.65);
+        --accent: rgba(255, 255, 255, 0.92);
+      }
+      html, body {
+        height: 100%;
+        margin: 0;
+        background: transparent;
+        font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      }
+      body {
+        border-radius: 14px;
+        overflow: hidden;
+      }
+      .shell {
+        height: 100%;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(120% 120% at 50% 30%, rgba(255, 255, 255, 0.10), transparent 60%), var(--bg);
+      }
+      .card {
+        width: 280px;
+        height: 160px;
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(0, 0, 0, 0.18));
+        box-shadow: 0 18px 55px rgba(0, 0, 0, 0.55);
+        display: grid;
+        place-items: center;
+      }
+      .ring {
+        width: 92px;
+        height: 92px;
+        border-radius: 999px;
+        background:
+          conic-gradient(from -90deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.95));
+        filter: drop-shadow(0 0 18px rgba(255, 255, 255, 0.22));
+        animation: spin 1.05s linear infinite;
+        position: relative;
+      }
+      .ring::after {
+        content: "";
+        position: absolute;
+        inset: 8px;
+        border-radius: inherit;
+        background: rgba(11, 11, 15, 0.92);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .label {
+        margin-top: 14px;
+        font-size: 14px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--text);
+        text-shadow: 0 0 18px rgba(255, 255, 255, 0.14);
+      }
+      .sub {
+        margin-top: 6px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <div class="card">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div class="ring" aria-hidden="true"></div>
+          <div class="label">Loading</div>
+          <div class="sub">Todo Manager</div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+

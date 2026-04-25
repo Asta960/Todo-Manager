@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo Manager</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="titlebar">
+      <div class="titlebar-drag">
+        <div class="titlebar-title">Todo Manager</div>
+      </div>
+      <div class="titlebar-controls">
+        <button id="winMinBtn" class="win-btn" type="button" aria-label="Свернуть">—</button>
+        <button id="winMaxBtn" class="win-btn" type="button" aria-label="Развернуть">▢</button>
+        <button id="winCloseBtn" class="win-btn win-btn-close" type="button" aria-label="Закрыть">×</button>
+      </div>
+    </div>
+    <div class="app-shell sidebar-collapsed" id="appShell">
+      <div class="sidebar-dock">
+        <div class="sidebar-rail">
+          <button type="button" id="sidebarToggle" class="sidebar-toggle" aria-controls="appSidebar" aria-expanded="false" title="Меню">›</button>
+        </div>
+        <aside class="sidebar" id="appSidebar">
+          <div class="brand">TODO</div>
+          <button class="nav-item active" data-view="hello">Hello</button>
+          <button class="nav-item" data-view="inbox">Inbox</button>
+          <button class="nav-item" data-view="tasks">Tasks</button>
+          <button class="nav-item" data-view="projects">Projects</button>
+          <button class="nav-item" data-view="daily">Daily</button>
+          <button type="button" class="nav-item nav-item--dev" id="devNavBtn" data-view="dev">Dev</button>
+          <button class="nav-item" data-view="settings">Setting</button>
+        </aside>
+      </div>
+
+      <main class="content">
+        <div id="contentScroll" class="content-scroll">
+        <header class="content-header">
+          <h1 id="pageTitle">Hello</h1>
+        </header>
+
+        <section id="view-hello" class="view active">
+          <div class="panel motivation-panel">
+            <div class="motivation-hero">
+              <div class="motivation-hero-main">
+                <div class="motivation-level-row">
+                  <div id="helloLevelRing" class="motivation-level-ring" style="--motivation-pct: 0">
+                    <div class="motivation-level-inner">
+                      <span id="helloLevelLabel" class="motivation-level-num">0</span>
+                      <span class="motivation-level-caption">уровень</span>
+                    </div>
+                  </div>
+                  <div class="motivation-xp-block">
+                    <div class="motivation-xp-top">
+                      <span id="helloXpHint" class="motivation-xp-hint">Выполняйте задачи с тегами — копите XP</span>
+                      <span id="helloXpLabel" class="motivation-xp-meta">0 / 1 XP</span>
+                    </div>
+                    <div
+                      id="helloXpTrack"
+                      class="motivation-xp-track"
+                      role="progressbar"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                      aria-valuenow="0"
+                      aria-label="Прогресс до следующего уровня"
+                    >
+                      <div id="helloXpBarFill" class="motivation-xp-fill"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="motivation-radar-block">
+                <div class="motivation-radar-head">
+                  <span class="motivation-radar-title">Диаграмма</span>
+                  <div class="motivation-zoom">
+                    <button id="radarZoomOutBtn" class="btn btn-icon" type="button" aria-label="Уменьшить диаграмму">
+                      −
+                    </button>
+                    <button id="radarZoomInBtn" class="btn btn-icon" type="button" aria-label="Увеличить диаграмму">
+                      +
+                    </button>
+                  </div>
+                </div>
+                <div class="motivation-canvas-shell">
+                  <canvas id="helloRadarCanvas" class="motivation-canvas" height="260" aria-label="Диаграмма тегов"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="motivation-tags-block is-collapsed" id="helloTagStatsBlock">
+              <button
+                type="button"
+                class="motivation-tags-toggle"
+                id="helloTagStatsToggle"
+                aria-expanded="false"
+                aria-controls="helloTagStats"
+              >
+                <span class="motivation-tags-toggle-label">Очки по тегам</span>
+                <span class="motivation-tags-toggle-caret" aria-hidden="true">▾</span>
+              </button>
+              <div id="helloTagStats" class="motivation-tags" role="region" aria-label="Очки по тегам"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Активные задачи</h2>
+              <div class="panel-actions">
+                <span id="activeTaskCount" class="badge">0</span>
+              </div>
+            </div>
+            <div id="helloActiveList" class="task-list"></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Ежедневные задачи</h2>
+            </div>
+            <div id="helloDailyList" class="task-list"></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Из проектов</h2>
+            </div>
+            <div id="helloProjectPeekList" class="task-list"></div>
+          </div>
+        </section>
+
+        <section id="view-inbox" class="view">
+          <div class="panel">
+            <div class="inbox-quick-card">
+              <input id="inboxInput" type="text" class="inbox-q-input" placeholder="Добавить в Inbox (Enter)" />
+              <div class="inbox-q-field inbox-q-field--tag">
+                <select id="inboxTagSelect" class="input" aria-label="Тег для Inbox">
+                  <option value="">Тег</option>
+                </select>
+              </div>
+              <div class="inbox-q-field inbox-q-field--group">
+                <select id="inboxGroupSelect" class="input" aria-label="Группа для новой задачи">
+                  <option value="">Без группы</option>
+                </select>
+              </div>
+              <button id="inboxAddBtn" type="button" class="btn btn-accent inbox-q-btn">Добавить</button>
+            </div>
+            <div class="inbox-groups-bar quick-add quick-add--pair">
+              <input id="inboxGroupTitleInput" type="text" placeholder="Название группы" />
+              <button id="inboxCreateGroupBtn" type="button" class="btn">Создать группу</button>
+            </div>
+            <hr class="divider inbox-before-list" />
+            <div id="inboxList" class="inbox-board"></div>
+          </div>
+        </section>
+
+        <section id="view-tasks" class="view">
+          <div id="tasksList" class="task-list"></div>
+        </section>
+
+        <section id="view-projects" class="view">
+          <div id="projectsListScreen" class="panel">
+            <div class="panel-actions panel-actions--left panel-actions--spaced quick-add">
+              <input id="projectTitleInput" class="input input-compact" type="text" placeholder="Название проекта" />
+              <select id="projectTagSelect" class="input input-compact" aria-label="Тег проекта">
+                <option value="">Тег</option>
+              </select>
+              <button id="createProjectBtn" type="button" class="btn btn-accent">Создать</button>
+            </div>
+            <hr class="divider projects-screen-divider" />
+            <div id="projectsList" class="project-list"></div>
+          </div>
+
+          <div id="projectDetailScreen" class="panel is-hidden">
+            <div class="panel-head">
+              <h2 id="projectDetailTitle">Project</h2>
+              <div class="panel-actions">
+                <button id="projectBackBtn" type="button" class="btn">Назад</button>
+              </div>
+            </div>
+            <div id="projectDetails" class="project-details"></div>
+          </div>
+        </section>
+
+        <section id="view-daily" class="view">
+          <div class="panel">
+            <div class="quick-add panel-actions--spaced">
+              <input id="dailyTemplateInput" type="text" placeholder="Новый шаблон (Enter)" />
+              <select id="dailyTemplateTagSelect" class="input" aria-label="Тег шаблона">
+                <option value="">Тег</option>
+              </select>
+              <button id="dailyTemplateAddBtn" type="button" class="btn btn-accent">Добавить</button>
+            </div>
+            <hr class="divider daily-templates-divider" />
+            <div id="dailyTemplatesList" class="task-list"></div>
+          </div>
+        </section>
+
+        <section id="view-dev" class="view">
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Dev</h2>
+            </div>
+            <div class="dev-tools">
+              <div class="quick-add">
+                <select id="devTagSelect" class="input" aria-label="Тег для Dev">
+                  <option value="">Тег</option>
+                </select>
+                <button id="devAddXpBtn" type="button" class="btn btn-accent">+1 exp</button>
+                <button id="devLevelUpBtn" type="button" class="btn">Новый уровень</button>
+              </div>
+              <button id="devCompleteDailyBtn" type="button" class="btn">Выполнить все daily (сегодня)</button>
+            </div>
+          </div>
+        </section>
+
+        <section id="view-settings" class="view">
+          <div class="settings-stack">
+            <div class="settings-section">
+              <h2>Акцент</h2>
+              <label class="field-row">
+                <span>Цвет интерфейса</span>
+                <input id="accentColorInput" type="color" aria-label="Цвет акцента" />
+              </label>
+            </div>
+            <hr class="divider" />
+            <div class="settings-section">
+              <h2>Файл данных и резервная копия</h2>
+              <p id="savePathLabel" class="data-path-value">не выбран</p>
+              <button id="changePathBtn" type="button" class="btn btn-wide">Изменить путь</button>
+              <div class="settings-actions settings-actions--data-backup">
+                <button id="importBtn" type="button" class="btn">Импорт</button>
+                <button id="exportBtn" type="button" class="btn">Экспорт</button>
+              </div>
+              <button id="resetAllDataBtn" type="button" class="btn btn-wide btn-danger">Обнулить все данные</button>
+            </div>
+            <hr class="divider" />
+            <div class="settings-section">
+              <h2>Теги</h2>
+              <div class="quick-add quick-add--pair">
+                <input id="tagInput" type="text" placeholder="Новый тег (Enter)" />
+                <button id="tagAddBtn" type="button" class="btn btn-accent">Добавить</button>
+              </div>
+              <hr class="divider settings-tags-divider" />
+              <div id="tagsList" class="task-list"></div>
+            </div>
+          </div>
+        </section>
+        </div>
+      </main>
+    </div>
+    <button type="button" class="sidebar-backdrop" id="sidebarBackdrop" aria-label="Закрыть меню" tabindex="-1"></button>
+
+    <script type="module" src="./js/app.js"></script>
+  </body>
+</html>

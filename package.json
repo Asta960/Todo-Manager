@@ -1,0 +1,51 @@
+{
+  "name": "todo-manager",
+  "version": "1.0.0",
+  "description": "Desktop TODO manager and daily habits",
+  "main": "main.js",
+  "author": "Asta",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win nsis",
+    "dist": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "latest",
+    "electron-builder": "latest"
+  },
+  "build": {
+    "appId": "com.astadesktop.todomanager",
+    "productName": "Todo Manager",
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "splash.html",
+      "styles.css",
+      "js/**/*.js",
+      "package.json"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "signAndEditExecutable": false,
+      "verifyUpdateCodeSignature": false,
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  }
+}
